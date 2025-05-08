@@ -41,11 +41,20 @@ export default {
 						.format(date)
 						.replace(' ', 'T');
 
-					// Calculate Berlin offset
+					// Get Berlin offset in minutes
 					const berlinOffset = new Date()
-						.toLocaleTimeString('en-us', { timeZone: berlinTimeZone, timeZoneName: 'shortOffset' })
+						.toLocaleTimeString('en-us', {
+							timeZone: berlinTimeZone,
+							timeZoneName: 'shortOffset',
+						})
 						.split(' ')[2];
-					const berlinOffsetFormatted = berlinOffset.replace(/[A-Z]/g, '');
+
+					// Convert offset to correct ISO format
+					const offsetSign = berlinOffset.startsWith('-') ? '-' : '+';
+					const offsetParts = berlinOffset.replace(/[A-Z]/g, '').split(':');
+					const offsetHours = String(Math.abs(parseInt(offsetParts[0], 10))).padStart(2, '0');
+					const offsetMinutes = offsetParts[1] ? String(Math.abs(parseInt(offsetParts[1], 10))).padStart(2, '0') : '00';
+					const berlinOffsetFormatted = `${offsetSign}${offsetHours}:${offsetMinutes}`;
 
 					// Combine ISO date and offset
 					const berlinDateString = `${berlinIsoString}${berlinOffsetFormatted}`;
