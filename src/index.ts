@@ -25,19 +25,45 @@ export default {
 					if (isNaN(date.getTime())) {
 						return new Response('Invalid date format', { status: 400 });
 					}
-					// get iso time
+
+					// Convert to Berlin time
+					const berlinFormatter = new Intl.DateTimeFormat('en-GB', {
+						timeZone: 'Europe/Berlin',
+						year: 'numeric',
+						month: '2-digit',
+						day: '2-digit',
+						hour: '2-digit',
+						minute: '2-digit',
+						second: '2-digit',
+						hour12: false,
+					});
+
+					const berlinTimeParts = berlinFormatter.formatToParts(date);
+					const berlinDateString = berlinTimeParts
+						.map(({ type, value }) => {
+							switch (type) {
+								case 'day':
+									return `${value}`;
+								case 'month':
+									return `${value}`;
+								case 'year':
+									return `${value}`;
+								case 'hour':
+									return `${value}`;
+								case 'minute':
+									return `${value}`;
+								case 'second':
+									return `${value}`;
+								default:
+									return value;
+							}
+						})
+						.join('');
+
+					// ISO String in UTC
 					const isoTime = date.toISOString();
 
-					const berlinTime = date.toLocaleString('en-US', { timeZone: 'Europe/Berlin' });
-
-					const berlinTimeOffset = date.getTimezoneOffset();
-					const offsetHours = Math.abs(berlinTimeOffset / 60);
-					const offsetMinutes = Math.abs(berlinTimeOffset % 60);
-					const offsetSign = berlinTimeOffset > 0 ? '-' : '+';
-					const offsetString = `${offsetSign}${String(offsetHours).padStart(2, '0')}:${String(offsetMinutes).padStart(2, '0')}`;
-					const berlinTimeWithOffset = `${berlinTime}${offsetString}`;
-
-					return new Response(JSON.stringify({ isoTime, berlinTimeWithOffset }), { status: 200 });
+					return new Response(JSON.stringify({ isoTime, berlinDateString }), { status: 200 });
 				}
 				return new Response('Internal Server Error', { status: 500 });
 			case '/api/message':
