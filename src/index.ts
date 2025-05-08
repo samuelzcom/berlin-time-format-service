@@ -26,7 +26,9 @@ export default {
 						return new Response('Invalid date format', { status: 400 });
 					}
 					const berlinTime = date.toLocaleString('en-US', { timeZone: 'Europe/Berlin' });
-					return new Response(JSON.stringify({ berlinTime }), { status: 200 });
+					const berlinTimeISO = new Date(berlinTime).toISOString();
+
+					return new Response(JSON.stringify({ berlinTimeISO }), { status: 200 });
 				}
 				return new Response('Internal Server Error', { status: 500 });
 			case '/api/message':
