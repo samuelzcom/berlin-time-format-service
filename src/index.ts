@@ -15,9 +15,23 @@ export default {
 	async fetch(request, env, ctx): Promise<Response> {
 		const url = new URL(request.url);
 		switch (url.pathname) {
-			case '/message':
+			case '/api/berlin-time':
+				// takes an optional datetime parameter as input
+				// returns a JSON object with berlinTime as berlin time
+				const datetimeParam = url.searchParams.get('datetime') || new Date().toISOString();
+
+				if (datetimeParam) {
+					const date = new Date(datetimeParam);
+					if (isNaN(date.getTime())) {
+						return new Response('Invalid date format', { status: 400 });
+					}
+					const berlinTime = date.toLocaleString('en-US', { timeZone: 'Europe/Berlin' });
+					return new Response(JSON.stringify({ berlinTime }), { status: 200 });
+				}
+				return new Response('Internal Server Error', { status: 500 });
+			case '/api/message':
 				return new Response('Hello, World!');
-			case '/random':
+			case '/api/random':
 				return new Response(crypto.randomUUID());
 			default:
 				return new Response('Not Found', { status: 404 });

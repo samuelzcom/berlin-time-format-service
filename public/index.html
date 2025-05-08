@@ -10,7 +10,7 @@
 		<button id="button" type="button">Fetch a random UUID</button>
 		<output id="random" for="button"></output>
 		<script>
-			fetch('/message')
+			fetch('/api/message')
 				.then((resp) => resp.text())
 				.then((text) => {
 					const h1 = document.getElementById('heading');
@@ -19,7 +19,7 @@
 
 			const button = document.getElementById("button");
 			button.addEventListener("click", () => {
-				fetch('/random')
+				fetch('/api/random')
 					.then((resp) => resp.text())
 					.then((text) => {
 						const random = document.getElementById('random');
