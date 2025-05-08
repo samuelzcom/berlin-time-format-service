@@ -27,8 +27,9 @@ export default {
 					}
 
 					// Convert to Berlin time
-					const berlinFormatter = new Intl.DateTimeFormat('en-GB', {
-						timeZone: 'Europe/Berlin',
+					const berlinTimeZone = 'Europe/Berlin';
+					const berlinIsoString = new Intl.DateTimeFormat('sv-SE', {
+						timeZone: berlinTimeZone,
 						year: 'numeric',
 						month: '2-digit',
 						day: '2-digit',
@@ -36,35 +37,23 @@ export default {
 						minute: '2-digit',
 						second: '2-digit',
 						hour12: false,
-					});
+					})
+						.format(date)
+						.replace(' ', 'T');
 
-					const berlinTimeParts = berlinFormatter.formatToParts(date);
-					const berlinDateString = berlinTimeParts
-						.map(({ type, value }) => {
-							switch (type) {
-								case 'day':
-									return `${value}`;
-								case 'month':
-									return `${value}`;
-								case 'year':
-									return `${value}`;
-								case 'hour':
-									return `${value}`;
-								case 'minute':
-									return `${value}`;
-								case 'second':
-									return `${value}`;
-								default:
-									return value;
-							}
-						})
-						.join('');
+					// Calculate Berlin offset
+					const berlinOffset = new Date()
+						.toLocaleTimeString('en-us', { timeZone: berlinTimeZone, timeZoneName: 'shortOffset' })
+						.split(' ')[2];
+					const berlinOffsetFormatted = berlinOffset.replace(/[A-Z]/g, '');
 
-					// ISO String in UTC
+					// Combine ISO date and offset
+					const berlinDateString = `${berlinIsoString}${berlinOffsetFormatted}`;
 					const isoTime = date.toISOString();
 
 					return new Response(JSON.stringify({ isoTime, berlinDateString }), { status: 200 });
 				}
+
 				return new Response('Internal Server Error', { status: 500 });
 			case '/api/message':
 				return new Response('Hello, World!');
