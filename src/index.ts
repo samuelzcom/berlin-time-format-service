@@ -25,10 +25,19 @@ export default {
 					if (isNaN(date.getTime())) {
 						return new Response('Invalid date format', { status: 400 });
 					}
-					const berlinTime = date.toLocaleString('en-US', { timeZone: 'Europe/Berlin' });
-					const berlinTimeISO = new Date(berlinTime).toISOString();
+					// get iso time
+					const isoTime = date.toISOString();
 
-					return new Response(JSON.stringify({ berlinTimeISO }), { status: 200 });
+					const berlinTime = date.toLocaleString('en-US', { timeZone: 'Europe/Berlin' });
+
+					const berlinTimeOffset = date.getTimezoneOffset();
+					const offsetHours = Math.abs(berlinTimeOffset / 60);
+					const offsetMinutes = Math.abs(berlinTimeOffset % 60);
+					const offsetSign = berlinTimeOffset > 0 ? '-' : '+';
+					const offsetString = `${offsetSign}${String(offsetHours).padStart(2, '0')}:${String(offsetMinutes).padStart(2, '0')}`;
+					const berlinTimeWithOffset = `${berlinTime}${offsetString}`;
+
+					return new Response(JSON.stringify({ isoTime, berlinTimeWithOffset }), { status: 200 });
 				}
 				return new Response('Internal Server Error', { status: 500 });
 			case '/api/message':
